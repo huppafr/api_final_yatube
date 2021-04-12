@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from .models import User
-from rest_framework import generics, filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, viewsets
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 
-from .models import Post, Group, Comment, Follow
+from .models import Group, Post, User, Follow
 from .permission import IsOwnerOrReadOnly
-from .serializers import CommentSerializer, PostSerializer, GroupSerializer, FollowSerializer
+from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
+                          PostSerializer)
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -20,11 +20,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticatedOrReadOnly,]
     search_fields = ['user__username']
     http_method_names = ['get', 'post']
 
@@ -47,13 +46,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    # serializer_class = FollowSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly,]
-    # http_method_names = ['get', 'post']
-    # filter_backends = [filters.SearchFilter]
-    # filterset_fields = ['following']
-    # search_fields = ['following__username', 'user__username']
-
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
@@ -63,5 +55,4 @@ class FollowViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        user = get_object_or_404(User, username=self.request.user)
-        return user.following
+        return Follow.objects.filter(following=self.request.user)
