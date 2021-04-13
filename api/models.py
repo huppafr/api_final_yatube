@@ -23,7 +23,10 @@ class Post(models.Model):
     )
 
     def __str__(self):
-        return self.text
+        return (f'Текст поста: {self.text[:50]}, '
+                f'Группа поста: {self.group}, '
+                f'Автор поста: {self.author}, '
+                f'Дата публикации: {self.pub_date}')
 
 
 class Group(models.Model):
@@ -44,14 +47,14 @@ class Group(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments"
+        User, on_delete=models.CASCADE, related_name='comments'
     )
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="comments"
+        Post, on_delete=models.CASCADE, related_name='comments'
     )
     text = models.TextField()
     created = models.DateTimeField(
-        "Дата добавления", auto_now_add=True, db_index=True
+        'Дата добавления', auto_now_add=True, db_index=True
     )
 
 
@@ -65,6 +68,6 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "following"],
-                                    name="unique_follow"),
+            models.UniqueConstraint(fields=['user', 'following'],
+                                    name='unique_follow'),
         ]

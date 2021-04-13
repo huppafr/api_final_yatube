@@ -1,13 +1,21 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
+from rest_framework import mixins
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 
-from .models import Group, Post, Follow
+from .models import Group, Post
 from .permission import IsOwnerOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
+
+
+class GetOrCreateViewSet(mixins.CreateModelMixin,
+                         mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    '''Parrent class for GET and POST methods'''
+    pass
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -21,12 +29,11 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(GetOrCreateViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, ]
     search_fields = ['user__username']
-    http_method_names = ['get', 'post']
 
     def perform_create(self, serializer):
         serializer.save()
@@ -46,7 +53,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(GetOrCreateViewSet):
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
@@ -56,4 +63,4 @@ class FollowViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        return Follow.objects.filter(following=self.request.user)
+        return self.request.user.following.all()
