@@ -11,9 +11,10 @@ class PostSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Post
 
+
 class GroupSerializer(serializers.ModelSerializer):
     title = serializers.CharField()
-    
+
     class Meta:
         fields = ('title',)
         model = Group
@@ -23,7 +24,7 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('id', 'post', 'text', 'author','created')
+        fields = ('id', 'post', 'text', 'author', 'created')
         model = Comment
 
 
@@ -37,11 +38,13 @@ class FollowSerializer(serializers.ModelSerializer):
         slug_field='username',
         queryset=User.objects.all()
     )
+
     def validate_following(self, data):
         """Проверка подписки на самого себя"""
         if data == self.context['request'].user:
             raise serializers.ValidationError()
         return data
+
     class Meta:
         fields = ('user', 'following')
         model = Follow
