@@ -1,2 +1,7 @@
-# api_final
-api final
+# REST API для проекта YaTube
+
+
+
+## Автор
+
+- Хюппенен Артем
