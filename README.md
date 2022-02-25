@@ -1,3 +1,7 @@
+# API-YaTube
+
+Проект был создан для изучения Django REST Framework.
+Сервис полволяет получать выборку из базы данных в формате JSON и проводить все манипуляции с данным.
 
 # Технологии
 
@@ -18,7 +22,6 @@ pip install -r requirements.txt
 ```
 4. Выполните миграции
 ```bash
-python manage.py makemigrations users
 python manage.py makemigrations
 python manage.py migrate
 ```
@@ -34,7 +37,7 @@ python manage.py runserver
 
 # Тестовый контент
 ## Пример
-На странице  http://127.0.0.1:8000/admin/users/user/ вы можете добавить тестовый контент, нажав кнопку IMPORT
+На странице  http://127.0.0.1:8000/admin/posts/
 
 ## Автор
 
